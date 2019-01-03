@@ -1,0 +1,5 @@
+- hosts: docker_nodes
+  become: yes
+  roles:
+    - role: docker
+
