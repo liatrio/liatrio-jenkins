@@ -1,0 +1,2 @@
+[docker_hosts]
+<aws_ip>  ansible_connection=ssh  ansible_user=ec2-user
