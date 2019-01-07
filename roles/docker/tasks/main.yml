@@ -1,0 +1,9 @@
+---
+- name: update yum repos
+  shell: yum update -y
+- name: Install Docker
+  shell: yum install docker -y
+- name: Start Docker
+  shell: service docker start
+- name: Change privileges for ec2-user
+  shell: usermod -a -G docker ec2-user
