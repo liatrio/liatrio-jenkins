@@ -6,7 +6,7 @@ def instance = Jenkins.getInstance()
 
 
 def hudsonRealm = new HudsonPrivateSecurityRealm(false)
-hudsonRealm.createAccount('admin','admin')
+hudsonRealm.createAccount('admin','liatrioadmin')
 instance.setSecurityRealm(hudsonRealm)
 instance.setCrumbIssuer(new DefaultCrumbIssuer(true))
 instance.save()
