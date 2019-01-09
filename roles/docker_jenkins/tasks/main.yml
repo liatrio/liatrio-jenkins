@@ -14,12 +14,4 @@
 - name: Build Jenkins image
   shell: docker build -t liatrio-jenkins .
 - name: run Jenkins container
-  shell: docker run -dp 8080:8080 liatrio-jenkins
-- name: Firewall open and redirect 80 to 8080 and 443 to 8443
-  shell: |
-    firewall-cmd --zone=public --add-port=80/tcp --permanent
-    firewall-cmd --zone=public --add-port=443/tcp --permanent
-    firewall-cmd --zone=public --add-masquerade --permanent
-    firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toport=8080 --permanent
-    firewall-cmd --zone=public --add-forward-port=port=443:proto=tcp:toport=8083 --permanent
-    firewall-cmd --reload
+  shell: docker run -dp 80:8080 liatrio-jenkins
