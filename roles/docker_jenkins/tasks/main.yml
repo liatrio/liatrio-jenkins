@@ -12,6 +12,6 @@
     group: ec2-user
     mode: u+rwx,g+rwx
 - name: Build Jenkins image
-  shell: docker build -t liatrio-jenkins .
+  shell: docker build --build-arg graf_user=$GRAF_USER --build-arg graf_pass=$GRAF_PASS --build-arg bb_token=$BB_TOKEN --build-arg jira_creds=$JIRA_CREDS -t liatrio-jenkins .
 - name: run Jenkins container
   shell: docker run -dp 80:8080 liatrio-jenkins
