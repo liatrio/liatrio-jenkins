@@ -14,9 +14,9 @@
 - name: Build Jenkins image
   shell: docker build --build-arg graf_user=$GRAF_USER --build-arg graf_pass=$GRAF_PASS --build-arg bb_token=$BB_TOKEN --build-arg jira_creds=$JIRA_CREDS -t liatrio-jenkins .
   environment:
-    GRAF_USER: {{GRAF_USER}}
-    GRAF_PASS: {{GRAF_PASS}}
-    BB_TOKEN: {{BB_TOKEN}}
-    JIRA_CREDS: {{JIRA_CREDS}}
+    GRAF_USER: "{{ GRAF_USER }}"
+    GRAF_PASS: "{{ GRAF_PASS }}"
+    BB_TOKEN: "{{ BB_TOKEN }}"
+    JIRA_CREDS: "{{ JIRA_CREDS }}"
 - name: run Jenkins container
   shell: docker run -dp 80:8080 liatrio-jenkins
