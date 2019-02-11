@@ -6,20 +6,20 @@ import hudson.util.Secret
 
 Credentials grafanaCreds = (Credentials) new UsernamePasswordCredentialsImpl(
                     CredentialsScope.GLOBAL,
-                    java.util.UUID.randomUUID().toString(),
+                    "graf-creds,
                     "Grafana",
                     System.getenv("GRAF_USER"),
                     System.getenv("GRAF_PASS"))
 
 Credentials bitbucketToken = (Credentials) new StringCredentialsImpl(
                     CredentialsScope.GLOBAL,
-                    java.util.UUID.randomUUID().toString(),
+                    "bb-token",
                     "Bitbucket Token",
                     Secret.fromString(System.getenv("BB_TOKEN")))
 
 Credentials jiraCreds = (Credentials) new StringCredentialsImpl(
                     CredentialsScope.GLOBAL,
-                    java.util.UUID.randomUUID().toString(),
+                    "jira-creds",
                     "JIRA Cred",
                     Secret.fromString(System.getenv("JIRA_CREDS")))
 
