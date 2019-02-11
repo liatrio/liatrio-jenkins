@@ -4,6 +4,14 @@ import com.cloudbees.plugins.credentials.domains.*;
 import org.jenkinsci.plugins.plaincredentials.impl.*
 import hudson.util.Secret
 
+
+Credentials githubCreds = (Credentials) new UsernamePasswordCredentialsImpl(
+                    CredentialsScope.GLOBAL,
+                    "github-creds,
+                    "Github",
+                    System.getenv("GITHUB_USER"),
+                    System.getenv("GITHUB_PASS"))
+
 Credentials grafanaCreds = (Credentials) new UsernamePasswordCredentialsImpl(
                     CredentialsScope.GLOBAL,
                     "graf-creds,
@@ -23,6 +31,7 @@ Credentials jiraCreds = (Credentials) new StringCredentialsImpl(
                     "JIRA Cred",
                     Secret.fromString(System.getenv("JIRA_CREDS")))
 
+SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), githubCreds)
 SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), grafanaCreds)
 SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), bitbucketToken)
 SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), jiraCreds)
