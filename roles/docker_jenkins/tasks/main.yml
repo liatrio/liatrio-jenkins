@@ -18,5 +18,7 @@
     GRAF_PASS: "{{ GRAF_PASS }}"
     BB_TOKEN: "{{ BB_TOKEN }}"
     JIRA_CREDS: "{{ JIRA_CREDS }}"
+    GITHUB_USER: "{{ GITHUB_USER }}"
+    GITHUB_PASS: "{{ GITHUB_PASS }}"
 - name: run Jenkins container
   shell: docker run -dp 80:8080 liatrio-jenkins
