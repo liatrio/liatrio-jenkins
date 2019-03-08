@@ -1,8 +1,15 @@
-FROM jenkins/jenkins:lts
+FROM jenkins/jenkins:2.166-alpine
 
-COPY jenkins/init.groovy.d/ /usr/share/jenkins/ref/init.groovy.d/
 ENV JAVA_OPTS="-Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false"
 
+# Additional plugins
 COPY jenkins/plugins.txt /usr/share/jenkins/plugins.txt
-COPY jenkins/jobs.txt /var/jenkins_home/jobs.txt
 RUN cat /usr/share/jenkins/plugins.txt | /usr/local/bin/install-plugins.sh
+
+# Additional jenkins config template
+COPY jenkins/ /usr/share/jenkins/ref/
+
+## install Maven
+#USER root
+#RUN apt-get update && apt-get install -y maven
+USER jenkins
