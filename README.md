@@ -22,7 +22,7 @@ kubectl apply -f kube/.
 ```
 #eval $(minikube docker-env)
 docker build . -t kube-jenkins:latest
-docker run -it -p 8080:8080 -e JOBLIST=https://raw.githubusercontent.com/liatrio/liatrio-jenkins/kube/jenkins/jobs.json kube-jenkins:latest
+docker run -it -p 8080:8080 -e JOBLIST=https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/jenkins/jobs.json kube-jenkins:latest
 ```
 
 ## To Browse Jenkins

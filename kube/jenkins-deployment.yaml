@@ -14,7 +14,7 @@ spec:
           image: liatrio/kube-jenkins:latest
           env:
             - name: JOBLIST
-              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/kube/jenkins/jobs.json
+              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/jenkins/jobs.json
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
             - name: KUBERNETES_NAMESPACE
