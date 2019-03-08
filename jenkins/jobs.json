@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Pipeline Demo",
+        "folder": "Demo",
+        "type": "multi",
+        "branch_includes": "*",
+        "repo_url": "https://github.com/liatrio/pipeline-demo-app.git",
+        "credential": "None",
+        "pipeline_file": "Jenkinsfile"
+    },
+    {
+        "name": "kube-jenkins",
+        "folder": "DockerBuilds",
+        "type": "single",
+        "branch_includes": "kube",
+        "repo_url": "https://github.com/liatrio/liatrio-jenkins.git",
+        "credential": "None",
+        "pipeline_file": "Jenkinsfile"
+    },
+    {
+        "name": "terraform-runner",
+        "folder": "DockerBuilds",
+        "type": "single",
+        "branch_includes": "*",
+        "repo_url": "https://github.com/liatrio/terraform-runner.git",
+        "credential": "None",
+        "pipeline_file": "Jenkinsfile"
+    },
+    {
+        "name": "aws-terraform",
+        "folder": "liatr.io",
+        "type": "multi",
+        "branch_includes": "*",
+        "repo_url": "https://github.com/liatrio/aws-terraform.git",
+        "credential": "None",
+        "pipeline_file": "Jenkinsfile"
+    }
+]

@@ -9,7 +9,7 @@ import jenkins.plugins.git.*
 
 
 
-def list = new File("/var/jenkins_home/jobs.txt")
+def list = new File("/usr/share/jenkins/ref/jobs.txt")
 def jobs = list.readLines()
 
 jenkins = Jenkins.instance;
