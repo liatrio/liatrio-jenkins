@@ -1,0 +1,33 @@
+podTemplate(label: label, yaml: """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:1.11
+    command: ['cat']
+    tty: true
+    volumeMounts:
+    - name: dockersock
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+  ) {
+
+  def image = "liatrio/sleep60"
+  def tag = "latest"
+
+  node(label) {
+    stage('Build Docker image') {
+      git 'https://github.com/michaelarichard/seed.git'
+      container('docker') {
+        dir ('sleep60') {
+          sh "sleep 60"
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 blueocean
 build-environment
 cloudbees-folder
+configuration-as-code
 config-file-provider
 credentials
 credentials-binding
