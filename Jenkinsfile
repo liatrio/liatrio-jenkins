@@ -4,7 +4,7 @@ pipeline {
         IMAGE='liatrio/kube-jenkins'
     }
     stages {
-        stage('Build') {
+        stage('Build_Master') {
             when { not { branch 'master' } }
             environment {
                 TAG="${env.BUILD_ID}"
