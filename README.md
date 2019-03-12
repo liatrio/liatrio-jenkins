@@ -5,6 +5,10 @@
  - Edit the jobs lists in this repo. (jenkins/jobs.txt, example/jobs.json)
  - Edit the JOBLIST environmental param defined in kube/jenkins-deployment.yaml and point to your own joblist.
 
+## Prerequisites
+ - virtualbox
+ - minikube https://kubernetes.io/docs/tasks/tools/install-minikube/
+
 ## Deploy to minikube
 ```
 minikube start
