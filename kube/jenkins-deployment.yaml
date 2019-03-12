@@ -84,6 +84,6 @@ spec:
         - name: jenkins-configuration-as-code
           configMap:
             name: jenkins-configuration-as-code
-        - name: tls
-          secret:
-            secretName: tls
+#        - name: tls
+#          secret:
+#            secretName: tls
