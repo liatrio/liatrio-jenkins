@@ -9,7 +9,7 @@
 - name: kube-jenkins
   folder: DockerBuilds
   type: single
-  branch_includes: 'kube_secrets'
+  branch_includes: 'master'
   repo_url: https://github.com/liatrio/liatrio-jenkins.git
   credential: None
   pipeline_file: Jenkinsfile
@@ -33,7 +33,7 @@
 - name: jnlp-slave
   folder: DockerBuilds
   type: single
-  branch_includes: 'kube_secrets'
+  branch_includes: 'master'
   repo_url: https://github.com/liatrio/liatrio-jenkins.git
   credential: None
   pipeline_file: example/slave/Jenkinsfile
@@ -41,7 +41,7 @@
 - name: sleep60
   folder: DockerBuilds
   type: single
-  branch_includes: 'kube_secrets'
+  branch_includes: 'master'
   repo_url: https://github.com/liatrio/liatrio-jenkins.git
   credential: None
   pipeline_file: example/sleep60/Jenkinsfile

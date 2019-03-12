@@ -19,7 +19,7 @@ spec:
               value: /var/jenkins_config/configuration-as-code.yaml
             # Load a joblist from a json file
             - name: JOBLIST
-              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/kube_secrets/example/jobs.json
+              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/example/jobs.json
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
             # Additional helper Env Vars
