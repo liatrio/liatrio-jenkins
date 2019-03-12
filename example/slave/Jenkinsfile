@@ -31,7 +31,7 @@ spec:
     stage('Build Docker image') {
       git 'https://github.com/liatrio/liatrio-jenkins.git'
       container('docker') {
-        dir ('slave') {
+        dir ('example/slave') {
           sh "docker build -t ${image}:${tag} ."
         }
       }

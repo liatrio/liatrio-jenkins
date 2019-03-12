@@ -12,7 +12,7 @@ spec:
       serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: liatrio/kube-jenkins:10
+          image: liatrio/kube-jenkins:11
           env:
             # Read the configuration-as-code from the ConfigMap
             - name: CASC_JENKINS_CONFIG
@@ -23,16 +23,16 @@ spec:
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
             # Additional helper Env Vars
-            - name: KUBERNETES_NAMESPACE
-              value: jenkins
+#            - name: KUBERNETES_NAMESPACE
+#              value: jenkins
             - name: MY_POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: MY_POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+#            - name: MY_POD_NAMESPACE
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: metadata.namespace
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:
@@ -68,9 +68,12 @@ spec:
               mountPath: /var/jenkins_home
             - name: jenkins-configuration-as-code
               mountPath: /var/jenkins_config
-            - name: tls
-              mountPath: "/var/secrets/tls"
-              readOnly: true
+#            - name: tls
+#              mountPath: "/var/secrets/tls"
+#              readOnly: true
+#            - name: credentials
+#              mountPath: "/var/secrets/credentials"
+#              readOnly: true
       securityContext:
         fsGroup: 1000
       volumes:

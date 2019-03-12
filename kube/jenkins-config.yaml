@@ -7,6 +7,9 @@ metadata:
   name: jenkins-configuration-as-code
 data:
   configuration-as-code.yaml: |
+    unclassified:
+      location:
+        url: http://192.168.99.100:30000/
     jenkins:
       clouds:
         - kubernetes:
@@ -49,7 +52,3 @@ data:
                 idleMinutes: "1"
                 activeDeadlineSeconds: "120"
                 slaveConnectTimeout: "1000"
-
-    unclassified:
-      location:
-        url: http://192.168.99.100:30000/
