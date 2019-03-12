@@ -1,5 +1,5 @@
 /**
- * This pipeline will run a Docker image build
+ * This pipeline will sleep for 60s using a Docker container
  */
 
 def label = "docker-${UUID.randomUUID().toString()}"
@@ -27,8 +27,7 @@ spec:
   def tag = "latest"
 
   node(label) {
-    stage('Build Docker image') {
-      git 'https://github.com/michaelarichard/seed.git'
+    stage('sleep60') {
       container('docker') {
         dir ('sleep60') {
           sh "sleep 60"

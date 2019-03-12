@@ -104,8 +104,11 @@ joblist.each { pipeline ->
 
     // Create the git configuration
     UserRemoteConfig userRemoteConfig = new UserRemoteConfig(gitRepo, gitRepoName, null, credentialsId)
-
-    branches = [new BranchSpec("*/master")]
+    if (includes) {
+      branches = [new BranchSpec(includes)]
+    } else {
+      branches = [new BranchSpec("*/master")]
+    }
     doGenerateSubmoduleConfigurations = false
     submoduleCfg = null
     browser = null

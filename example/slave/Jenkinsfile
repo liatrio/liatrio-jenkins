@@ -22,13 +22,14 @@ spec:
       path: /var/run/docker.sock
 """
   ) {
-
-  def image = "liatrio/jnlp-slave"
+  def repo = "liatrio"
+  def imagename = "jnlp-slave"
+  def image = "$repo/$imagename"
   def tag = "latest"
 
   node(label) {
     stage('Build Docker image') {
-      git 'https://github.com/michaelarichard/seed.git'
+      git 'https://github.com/liatrio/liatrio-jenkins.git'
       container('docker') {
         dir ('slave') {
           sh "docker build -t ${image}:${tag} ."
