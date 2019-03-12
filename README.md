@@ -5,21 +5,28 @@
  - Edit the jobs lists in this repo. (jenkins/jobs.txt, example/jobs.json)
  - Edit the JOBLIST environmental param defined in kube/jenkins-deployment.yaml and point to your own joblist.
 
-## Deploy to kubernetes
+## Deploy to minikube
 ```
+minikube start
 kubectl apply -f kube/.
 ```
 
 ## To Browse Jenkins
+- http://192.168.99.100:30000/ OR http://$(minikube ip):30000
 ```
 minikube service jenkins
 
 minikube service jenkins --url
 ```
 
-## Minikube dashboard
+## Minikube dashboard and logs
 ```
 minikube dashboard
+
+kubectl describe pod jenkins
+
+kubectl logs jenkins-<POD_ID_FROM_DESCRIBE> (Tab completion also works!)
+
 ```
 
 ## Delete from Kubernetes
