@@ -13,13 +13,20 @@ minikube stop
 minikube start --insecure-registry=https://$MINIKUBE_IP:30003
 ```
 
+## (Optional) To deploy to a jenkins specific namespace:
 ```
-##########
-# DYNAMIC SETTINGS TO FIGURE OUT HOW TO AUTOMATE:
-##########
+➜  kubectl apply -f kube/jenkins-namespace.yaml
+namespace/jenkins created
 
+➜  kubectl config set-context $(kubectl config current-context) --namespace=jenkins
+Context "minikube" modified.
+```
+
+## Notes and other items to possibly automate later.
+```
 # JENKINS CREDENTIALS TO IMPORT on boot groovy
 # NO LONGER NECESSARY, using SVC Account and autodetected tokens, but may be needed for other cluster access later.
+
 # Convert minikube Client cert to pkcs12 for import into jenkins credential w/ pass 'secret'
 openssl pkcs12 -export -out ~/.minikube/minikube.pfx -inkey ~/.minikube/apiserver.key -in ~/.minikube/apiserver.crt -certfile ~/.minikube/ca.crt -passout pass:secret
 cp ~/.minikube/minikube.pfx ~/Documents/minikube.pfx
