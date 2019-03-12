@@ -1,46 +1,55 @@
 # liatrio-jenkins
 
-## Job configuration
- - Edit the jobs files in this repo.
-```
-vi jenkins/jobs.yaml && cat jenkins/jobs.yaml | yaml2json > jenkins/jobs.json 
-```
- - Edit the JOBLIST env param in kube/jenkins-deployment.yaml and point to your own joblist.
+## Job configuration options
+ - Add jobs to the configuration as code config in kube/jenkins-configuration.yaml
+ - Edit the jobs lists in this repo. (jenkins/jobs.txt, example/jobs.json)
+ - Edit the JOBLIST environmental param defined in kube/jenkins-deployment.yaml and point to your own joblist.
 
-## Build to run on local minikube docker
+## Prerequisites
+ - virtualbox
+ - minikube https://kubernetes.io/docs/tasks/tools/install-minikube/
+
+## Deploy to minikube
 ```
 minikube start
-eval $(minikube docker-env)
-docker build . -t kube-jenkins:latest
-```
-## Deploy to kubernetes
-```
 kubectl apply -f kube/.
 ```
 
-## Manual Start for testing/debugging of init.groovy.d scripts
+## To Browse Jenkins
+- http://192.168.99.100:30000/ OR http://$(minikube ip):30000
 ```
-#eval $(minikube docker-env)
-docker build . -t kube-jenkins:latest
-docker run -it -p 8080:8080 -e JOBLIST=https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/jenkins/jobs.json kube-jenkins:latest
+minikube service jenkins
+
+minikube service jenkins --url
 ```
 
-## To Browse Jenkins
-- 
+## Minikube dashboard and logs
 ```
-minikube service jenkins --url
-or
-minikube service jenkins
-or 
+minikube dashboard
+
+kubectl describe pod jenkins
+
+kubectl logs jenkins-<POD_ID_FROM_DESCRIBE> (Tab completion also works!)
+
 ```
- - http://${MINIKUBE_IP}:30000
 
 ## Delete from Kubernetes
 ```
 kubectl delete -f kube/.
 ```
 
-## Minikube dashboard
+## Manual Start for testing/debugging of init.groovy.d scripts
 ```
-minikube dashboard
+# (Optional) Use docker on minikube
+#minikube start
+#eval $(minikube docker-env)
+
+docker build . -t kube-jenkins:latest
+
+docker run -it \
+-v $(pwd)/kube/config:/var/jenkins_config \
+-p 8080:8080 \
+-e CASC_JENKINS_CONFIG=/var/jenkins_config/configuration-as-code.yaml \
+-e JOBLIST=https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/example/jobs.json \
+kube-jenkins:latest
 ```

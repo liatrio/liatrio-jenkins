@@ -9,33 +9,52 @@ spec:
       labels:
         app: jenkins
     spec:
+      serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: liatrio/kube-jenkins:latest
+          image: liatrio/kube-jenkins:11
           env:
+            # Read the configuration-as-code from the ConfigMap
+            - name: CASC_JENKINS_CONFIG
+              value: /var/jenkins_config/configuration-as-code.yaml
+            # Load a joblist from a json file
             - name: JOBLIST
-              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/jenkins/jobs.json
+              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/example/jobs.json
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
-            - name: KUBERNETES_NAMESPACE
-              value: jenkins
+            # Additional helper Env Vars
+#            - name: KUBERNETES_NAMESPACE
+#              value: jenkins
             - name: MY_POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: MY_POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+#            - name: MY_POD_NAMESPACE
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: metadata.namespace
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 500Mi
           ports:
             - name: http-port
               containerPort: 8080
             - name: jnlp-port
               containerPort: 50000
+          livenessProbe:
+            httpGet:
+              path: /login
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /login
@@ -47,7 +66,24 @@ spec:
           volumeMounts:
             - name: jenkins-home
               mountPath: /var/jenkins_home
+            - name: jenkins-configuration-as-code
+              mountPath: /var/jenkins_config
+#            - name: tls
+#              mountPath: "/var/secrets/tls"
+#              readOnly: true
+#            - name: credentials
+#              mountPath: "/var/secrets/credentials"
+#              readOnly: true
+      securityContext:
+        fsGroup: 1000
       volumes:
         - name: jenkins-home
           persistentVolumeClaim:
             claimName: jenkins-master-pvc
+        # The configuration-as-code ConfigMap
+        - name: jenkins-configuration-as-code
+          configMap:
+            name: jenkins-configuration-as-code
+#        - name: tls
+#          secret:
+#            secretName: tls
