@@ -45,5 +45,11 @@ kubectl delete -f kube/.
 #eval $(minikube docker-env)
 
 docker build . -t kube-jenkins:latest
-docker run -it -p 8080:8080 -e JOBLIST=https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/example/jobs.json kube-jenkins:latest
+
+docker run -it \
+-v $(pwd)/kube/config:/var/jenkins_config \
+-p 8080:8080 \
+-e CASC_JENKINS_CONFIG=/var/jenkins_config/configuration-as-code.yaml \
+-e JOBLIST=https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/example/jobs.json \
+kube-jenkins:latest
 ```
