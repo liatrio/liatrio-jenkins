@@ -14,7 +14,7 @@ spec:
         - name: jenkins
           image: liatrio/kube-jenkins:latest
           env:
-            # Read the configuration-as-code from the ConfigMap
+            # Point CASC to configuration-as-code.yaml defined in Volumes.
             - name: CASC_JENKINS_CONFIG
               value: /var/jenkins_config/configuration-as-code.yaml
             # Load a joblist from a json file
@@ -23,16 +23,21 @@ spec:
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
             # Additional helper Env Vars
-#            - name: KUBERNETES_NAMESPACE
-#              value: jenkins
+            # - name: KUBERNETES_NAMESPACE
+            #   value: jenkins
+            # OR
+            # - name: KUBERNETES_NAMESPACE
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath: metadata.namespace
             - name: MY_POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-#            - name: MY_POD_NAMESPACE
-#              valueFrom:
-#                fieldRef:
-#                  fieldPath: metadata.namespace
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:
@@ -87,3 +92,6 @@ spec:
 #        - name: tls
 #          secret:
 #            secretName: tls
+#        - name: credentials
+#          secret:
+#            secretName: credentials
