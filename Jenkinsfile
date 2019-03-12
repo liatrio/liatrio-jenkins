@@ -5,7 +5,7 @@ pipeline {
     }
     stages {
         stage('Build_Master') {
-            when { not { branch 'master' } }
+    //        when { not { branch 'master' } }
             environment {
                 TAG="${env.BUILD_ID}"
             }
@@ -14,7 +14,7 @@ pipeline {
             }
         }
         stage('Build') {
-            when { branch 'master' }
+//            when { branch '*/master' }
             environment {
                 TAG="latest"
             }
@@ -23,7 +23,7 @@ pipeline {
             }
         }
         stage('Push to dockerhub Dev') {
-            when { not { branch 'master'} }
+  //          when { not { branch 'master'} }
             environment { TAG="${env.BUILD_ID}" }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
@@ -33,7 +33,7 @@ pipeline {
             }
         }
         stage('Push to dockerhub') {
-            when { branch 'master' }
+  //          when { branch 'master' }
             environment { TAG="latest" }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
