@@ -1,3 +1,9 @@
+/**
+ * This pipeline will run a Docker image build
+ */
+
+def label = "docker-${UUID.randomUUID().toString()}"
+
 podTemplate(label: label, yaml: """
 apiVersion: v1
 kind: Pod
