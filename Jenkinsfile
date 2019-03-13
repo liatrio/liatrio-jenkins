@@ -19,6 +19,7 @@ pipeline {
                 TAG="${env.BUILD_ID}"
             }
             steps {
+                sh "pwd && echo $PATH && which docker"
                 sh "docker build --pull -t ${IMAGE}:${TAG} ."
             }
         }
