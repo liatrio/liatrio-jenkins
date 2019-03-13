@@ -7,7 +7,7 @@ pipeline {
 //    }
 //  }
     agent {
-        label 'docker'
+        docker { image 'docker:latest' }
     }
     environment {
         IMAGE='liatrio/kube-jenkins'
