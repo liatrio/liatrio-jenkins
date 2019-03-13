@@ -7,7 +7,7 @@ pipeline {
 //    }
 //  }
     agent {
-        docker 'docker'
+        docker { image 'docker:latest' }
     }
 //    agent {
 //      label 'docker'
