@@ -15,6 +15,9 @@ pipeline {
     stages {
         stage('Build_Master') {
             when { not { branch 'master' } }
+            agent {
+              docker { image 'docker:latest' }
+            }
             environment {
                 TAG="${env.BUILD_ID}"
             }
