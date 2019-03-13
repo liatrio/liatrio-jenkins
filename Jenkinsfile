@@ -7,7 +7,7 @@ pipeline {
 //    }
 //  }
     agent {
-        docker 'node'
+        docker 'docker'
     }
 //    agent {
 //      label 'docker'
