@@ -1,5 +1,17 @@
 pipeline {
-    agent any
+//  agent {
+//    kubernetes {
+//      label 'mypod'
+//      defaultContainer 'jnlp'
+//      yamlFile 'KubernetesPod.yaml'
+//    }
+//  }
+    agent {
+        docker 'node'
+    }
+//    agent {
+//      label 'docker'
+//    }
     environment {
         IMAGE='liatrio/kube-jenkins'
     }
