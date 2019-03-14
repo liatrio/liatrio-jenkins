@@ -37,7 +37,7 @@ spec:
       container('docker') {
         withCredentials([usernamePassword(credentialsId: repoCredentialId, passwordVariable: 'Password', usernameVariable: 'Username')]) {
           sh "docker build -t ${image}:${tag} ."
-          sh "docker login -u ${env.Username} -p ${env.Password}"
+          sh "docker login -u ${env.Username} -p ${env.Password} ${repo}"
           sh "docker push ${image}:${tag}"
         }
       }
