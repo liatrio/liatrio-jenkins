@@ -35,7 +35,7 @@ spec:
     stage('Build Docker image') {
       git 'https://github.com/liatrio/liatrio-jenkins.git'
       container('docker') {
-        withCredentials([usernamePassword(credentialsId: repoCredentialId, passwordVariable: 'Password', usernameVariable: 'Password')]) {
+        withCredentials([usernamePassword(credentialsId: repoCredentialId, passwordVariable: 'Password', usernameVariable: 'Username')]) {
           sh "docker build -t ${image}:${tag} ."
           sh "docker login -u ${env.Username} -p ${env.Password}"
           sh "docker push ${image}:${tag}"
