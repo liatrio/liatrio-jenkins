@@ -22,18 +22,22 @@ spec:
       path: /var/run/docker.sock
 """
   ) {
-  def repo = "liatrio"
-  def imagename = "jnlp-slave"
+  def repo = 'docker.artifactory.liatr.io'
+  def repoCredentialId='artifactory'
+//  def repo = "liatrio"
+//  def repoCredentialId='dockerhub'
+  def imagename = "kube-jenkins"
   def image = "$repo/$imagename"
-  def tag ="${env.BUILD_ID}"
+  //def tag = "latest"
+  def tag = '0.1.0'
 
   node(label) {
     stage('Build Docker image') {
       git 'https://github.com/liatrio/liatrio-jenkins.git'
       container('docker') {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
+        withCredentials([usernamePassword(credentialsId: repoCredentialId, passwordVariable: 'Password', usernameVariable: 'Password')]) {
           sh "docker build -t ${image}:${tag} ."
-          sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
+          sh "docker login -u ${env.Username} -p ${env.Password}"
           sh "docker push ${image}:${tag}"
         }
       }
