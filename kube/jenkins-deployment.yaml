@@ -12,7 +12,7 @@ spec:
       serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: liatrio/kube-jenkins:latest
+          image: liatrio/kube-jenkins:16
           env:
             # Read the configuration-as-code from the ConfigMap
             - name: CASC_JENKINS_CONFIG
