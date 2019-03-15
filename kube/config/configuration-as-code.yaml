@@ -132,19 +132,19 @@ credentials:
     domainCredentials:
       - credentials:
           - usernamePassword:
-              scope:       SYSTEM
+              scope:       GLOBAL
               id:          artifactory
               description: artifactory
               username:    ${ARTIFACTORY_USERNAME}
               password:    ${ARTIFACTORY_PASSWORD}
           - usernamePassword:
-              scope:       SYSTEM
+              scope:       GLOBAL
               id:          dockerhub
               description: dockerhub
               username:    ${DOCKERHUB_USERNAME}
               password:    ${DOCKERHUB_PASSWORD}
           - usernamePassword:
-              scope:    SYSTEM
+              scope:    GLOBAL
               id:       bitbucket
               description: bitbucket
               username: ${BITBUCKET_USERNAME}
