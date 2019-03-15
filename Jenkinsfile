@@ -28,8 +28,8 @@ spec:
 //  def repoCredentialId='dockerhub'
   def imagename = "kube-jenkins"
   def image = "$repo/$imagename"
-  //def tag = "latest"
-  def tag = '0.1.0'
+//  def tag = "latest"
+  def tag = '0.1.1'
 
   node(label) {
     stage('Build Docker image') {
