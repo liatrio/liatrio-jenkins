@@ -17,10 +17,19 @@ Jenkins jenkins = Jenkins.instance
 // Bring in some env values
 def env = System.getenv()
 String jobListUrl = env['JOBLIST']
-
-apiUrl = new URL(jobListUrl)
-println jobListUrl
-def joblist = new JsonSlurper().parseText(apiUrl.text)
+if (jobListUrl) {
+  apiUrl = new URL(jobListUrl)
+  println jobListUrl
+  def joblist = new JsonSlurper().parseText(apiUrl.text)
+} else {
+  try {
+    def inputFile = new File("/var/jenkins_jobs/joblist.json")
+    def joblist = new JsonSlurper().parseText(inputFile.text)
+  } catch(Exception e) {
+      println "No joblist.json found."
+      return
+  }
+}
 
 joblist.each { pipeline ->
   println "FOLDER: ${pipeline.folder}"

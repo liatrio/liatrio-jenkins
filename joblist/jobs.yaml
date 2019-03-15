@@ -8,15 +8,15 @@
 
 - name: kube-jenkins
   folder: DockerBuilds
-  type: single
-  branch_includes: 'master'
+  type: multi
+  branch_includes: '*'
   repo_url: https://github.com/liatrio/liatrio-jenkins.git
   credential: None
   pipeline_file: Jenkinsfile
 
 - name: terraform-runner
   folder: DockerBuilds
-  type: single
+  type: multi
   branch_includes: '*'
   repo_url: https://github.com/liatrio/terraform-runner.git
   credential: None
@@ -32,8 +32,8 @@
 
 - name: jnlp-slave
   folder: DockerBuilds
-  type: single
-  branch_includes: 'master'
+  type: multi
+  branch_includes: '*'
   repo_url: https://github.com/liatrio/liatrio-jenkins.git
   credential: None
   pipeline_file: example/slave/Jenkinsfile

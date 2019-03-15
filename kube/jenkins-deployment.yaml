@@ -12,14 +12,23 @@ spec:
       serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: liatrio/kube-jenkins:latest
+          image: liatrio/kube-jenkins:16
           env:
             # Read the configuration-as-code from the ConfigMap
             - name: CASC_JENKINS_CONFIG
               value: /var/jenkins_config/configuration-as-code.yaml
             # Load a joblist from a json file
-            - name: JOBLIST
-              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/example/jobs.json
+            - name: ARTIFACTORY_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: artifactory
+                  key: username
+            - name: ARTIFACTORY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: artifactory
+                  key: password
+
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
             # Additional helper Env Vars

@@ -1,46 +1,46 @@
-pipeline {
-    agent any
-    environment {
-        IMAGE='liatrio/kube-jenkins'
+/**
+ * This pipeline will run a Docker image build
+ */
+
+def label = "docker-${UUID.randomUUID().toString()}"
+
+podTemplate(label: label, yaml: """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:1.11
+    command: ['cat']
+    tty: true
+    volumeMounts:
+    - name: dockersock
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+  ) {
+  def repo = 'docker.artifactory.liatr.io'
+  def repoCredentialId='artifactory'
+//  def repo = "liatrio"
+//  def repoCredentialId='dockerhub'
+  def imagename = "kube-jenkins"
+  def image = "$repo/$imagename"
+//  def tag = "latest"
+  def tag = '0.1.1'
+
+  node(label) {
+    stage('Build Docker image') {
+      git 'https://github.com/liatrio/liatrio-jenkins.git'
+      container('docker') {
+        withCredentials([usernamePassword(credentialsId: repoCredentialId, passwordVariable: 'Password', usernameVariable: 'Username')]) {
+          sh "docker build -t ${image}:${tag} ."
+          sh "docker login -u ${env.Username} -p ${env.Password} ${repo}"
+          sh "docker push ${image}:${tag}"
+        }
+      }
     }
-    stages {
-        stage('Build_Master') {
-            when { not { branch 'master' } }
-            environment {
-                TAG="${env.BUILD_ID}"
-            }
-            steps {
-                sh "docker build --pull -t ${IMAGE}:${TAG} ."
-            }
-        }
-        stage('Build') {
-            when { branch 'master' }
-            environment {
-                TAG="latest"
-            }
-            steps {
-                sh "docker build --pull -t ${IMAGE}:${TAG} ."
-            }
-        }
-        stage('Push to dockerhub Dev') {
-            when { not { branch 'master'} }
-            environment { TAG="${env.BUILD_ID}" }
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
-                    sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
-                    sh "docker push ${env.IMAGE}:${TAG}"
-                }
-            }
-        }
-        stage('Push to dockerhub') {
-            when { branch 'master' }
-            environment { TAG="latest" }
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]) {
-                    sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
-                    sh "docker push ${env.IMAGE}:${TAG}"
-                }
-            }
-        }
-    }
+  }
 }
