@@ -27,6 +27,7 @@ data:
                     workingDir: "/home/jenkins"
                     ttyEnabled: true
                     command: cat
+                    args: ""
                     resourceRequestCpu: "500m"
                     resourceLimitCpu: "1000m"
                     resourceRequestMemory: "1Gi"
@@ -72,7 +73,11 @@ data:
                 slaveConnectTimeout: "1000"
     jobs:
       - script: >
-           multibranchPipelineJob('image-jenkins') {
+          folder('Containers') {
+              displayName('Containers')
+              description('Containers')
+          }
+           multibranchPipelineJob('Containers/Multi-Pipeline-Example') {
              branchSources {
                github {
                  repoOwner('liatrio')
@@ -85,3 +90,67 @@ data:
                }
              }
            }
+      - script: >
+          pipelineJob('Containers/jenkins-master') {
+            def repo = 'https://github.com/liatrio/liatrio-jenkins.git'
+            def script = 'Jenkinsfile'
+            triggers {
+              scm('H/5 * * * *')
+            }
+            description("Pipeline for $script in $repo")
+            definition {
+              cpsScm {
+                scm {
+                  git {
+                    remote { url(repo) }
+                    branches('master', 'joblist')
+                    scriptPath(script)
+                    extensions { }  // required as otherwise it may try to tag the repo, which you may not want
+                  }
+                }
+              }
+            }
+          }
+      - script: >
+          pipelineJob('Containers/jnlp-slave') {
+            def repo = 'https://github.com/liatrio/liatrio-jenkins.git'
+            def script = 'example/slave/Jenkinsfile'
+            triggers {
+              scm('H/5 * * * *')
+            }
+            description("Pipeline for $script in $repo")
+            definition {
+              cpsScm {
+                scm {
+                  git {
+                    remote { url(repo) }
+                    branches('master', 'joblist')
+                    scriptPath(script)
+                    extensions { }  // required as otherwise it may try to tag the repo, which you may not want
+                  }
+                }
+              }
+            }
+          }
+    credentials:
+      system:
+        domainCredentials:
+          - credentials:
+              - usernamePassword:
+                  scope:       GLOBAL
+                  id:          artifactory
+                  description: artifactory
+                  username:    ${ARTIFACTORY_USERNAME}
+                  password:    ${ARTIFACTORY_PASSWORD}
+              - usernamePassword:
+                  scope:       GLOBAL
+                  id:          dockerhub
+                  description: dockerhub
+                  username:    ${DOCKERHUB_USERNAME}
+                  password:    ${DOCKERHUB_PASSWORD}
+              - usernamePassword:
+                  scope:    GLOBAL
+                  id:       bitbucket
+                  description: bitbucket
+                  username: ${BITBUCKET_USERNAME}
+                  password: ${BITBUCKET_PASSWORD}

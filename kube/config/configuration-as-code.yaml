@@ -17,11 +17,12 @@ jenkins:
             nodeUsageMode: NORMAL
             containers:
               - name: docker
-                image: docker:1.11
+                image: "docker:1.11"
                 alwaysPullImage: true
                 workingDir: "/home/jenkins"
                 ttyEnabled: true
-                command: ['cat']
+                command: cat
+                args: ""
                 resourceRequestCpu: "500m"
                 resourceLimitCpu: "1000m"
                 resourceRequestMemory: "1Gi"
@@ -39,7 +40,7 @@ jenkins:
                 alwaysPullImage: true
                 workingDir: "/home/jenkins"
                 ttyEnabled: true
-                command: apk add docker && /usr/local/bin/jenkins-slave
+                command: /usr/local/bin/jenkins-slave
                 args: ""
                 resourceRequestCpu: "500m"
                 resourceLimitCpu: "1000m"
@@ -67,7 +68,11 @@ jenkins:
             slaveConnectTimeout: "1000"
 jobs:
   - script: >
-       multibranchPipelineJob('image-jenkins') {
+      folder('Containers') {
+          displayName('Containers')
+          description('Containers')
+      }
+       multibranchPipelineJob('Containers/Multi-Pipeline-Example') {
          branchSources {
            github {
              repoOwner('liatrio')
@@ -79,7 +84,68 @@ jobs:
              numToKeep(1)
            }
          }
-         triggers {
-           periodic(5)
-         }
        }
+  - script: >
+      pipelineJob('Containers/jenkins-master') {
+        def repo = 'https://github.com/liatrio/liatrio-jenkins.git'
+        def script = 'Jenkinsfile'
+        triggers {
+          scm('H/5 * * * *')
+        }
+        description("Pipeline for $script in $repo")
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url(repo) }
+                branches('master', 'joblist')
+                scriptPath(script)
+                extensions { }  // required as otherwise it may try to tag the repo, which you may not want
+              }
+            }
+          }
+        }
+      }
+  - script: >
+      pipelineJob('Containers/jnlp-slave') {
+        def repo = 'https://github.com/liatrio/liatrio-jenkins.git'
+        def script = 'example/slave/Jenkinsfile'
+        triggers {
+          scm('H/5 * * * *')
+        }
+        description("Pipeline for $script in $repo")
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url(repo) }
+                branches('master', 'joblist')
+                scriptPath(script)
+                extensions { }  // required as otherwise it may try to tag the repo, which you may not want
+              }
+            }
+          }
+        }
+      }
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope:       SYSTEM
+              id:          artifactory
+              description: artifactory
+              username:    ${ARTIFACTORY_USERNAME}
+              password:    ${ARTIFACTORY_PASSWORD}
+          - usernamePassword:
+              scope:       SYSTEM
+              id:          dockerhub
+              description: dockerhub
+              username:    ${DOCKERHUB_USERNAME}
+              password:    ${DOCKERHUB_PASSWORD}
+          - usernamePassword:
+              scope:    SYSTEM
+              id:       bitbucket
+              description: bitbucket
+              username: ${BITBUCKET_USERNAME}
+              password: ${BITBUCKET_PASSWORD}
