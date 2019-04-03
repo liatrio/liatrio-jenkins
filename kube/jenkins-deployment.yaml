@@ -12,27 +12,93 @@ spec:
       serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: liatrio/kube-jenkins:latest
+          image: docker.artifactory.liatr.io/kube-jenkins:0.1.10
+#          image: liatrio/kube-jenkins:16
           env:
             # Read the configuration-as-code from the ConfigMap
             - name: CASC_JENKINS_CONFIG
               value: /var/jenkins_config/configuration-as-code.yaml
-            # Load a joblist from a json file
-            - name: JOBLIST
-              value: https://raw.githubusercontent.com/liatrio/liatrio-jenkins/master/example/jobs.json
+            - name: SLACK_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: slack-token
+                  key: domain
+            - name: CRED_artifactory_username
+              valueFrom:
+                secretKeyRef:
+                  name: artifactory
+                  key: username
+            - name: CRED_artifactory_password
+              valueFrom:
+                secretKeyRef:
+                  name: artifactory
+                  key: password
+            - name: CRED_github_privateKey
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-ssh-key
+                  key: id_rsa
+            - name: CRED_bitbucket_privateKey
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-ssh-key
+                  key: id_rsa
+            - name: CRED_slack-token_secret
+              valueFrom:
+                secretKeyRef:
+                  name: slack-token
+                  key: token
+            - name: CRED_kpGithub_username
+              valueFrom:
+                secretKeyRef:
+                  name: kpgithub
+                  key: username
+            - name: CRED_kpGithub_password
+              valueFrom:
+                secretKeyRef:
+                  name: kpgithub
+                  key: password
+            - name: CRED_snapshot_username
+              valueFrom:
+                secretKeyRef:
+                  name: snapshot
+                  key: username
+            - name: CRED_snapshot_password
+              valueFrom:
+                secretKeyRef:
+                  name: snapshot
+                  key: password
+            - name: CRED_release_username
+              valueFrom:
+                secretKeyRef:
+                  name: release
+                  key: username
+            - name: CRED_release_password
+              valueFrom:
+                secretKeyRef:
+                  name: release
+                  key: password
+            - name: CRED_nexusIQ_username
+              valueFrom:
+                secretKeyRef:
+                  name: nexusiq
+                  key: username
+            - name: CRED_nexusIQ_password
+              valueFrom:
+                secretKeyRef:
+                  name: nexusiq
+                  key: password
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
             # Additional helper Env Vars
-#            - name: KUBERNETES_NAMESPACE
-#              value: jenkins
             - name: MY_POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-#            - name: MY_POD_NAMESPACE
-#              valueFrom:
-#                fieldRef:
-#                  fieldPath: metadata.namespace
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:
@@ -68,12 +134,6 @@ spec:
               mountPath: /var/jenkins_home
             - name: jenkins-configuration-as-code
               mountPath: /var/jenkins_config
-#            - name: tls
-#              mountPath: "/var/secrets/tls"
-#              readOnly: true
-#            - name: credentials
-#              mountPath: "/var/secrets/credentials"
-#              readOnly: true
       securityContext:
         fsGroup: 1000
       volumes:
@@ -84,6 +144,3 @@ spec:
         - name: jenkins-configuration-as-code
           configMap:
             name: jenkins-configuration-as-code
-#        - name: tls
-#          secret:
-#            secretName: tls

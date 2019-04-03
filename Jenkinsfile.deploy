@@ -1,0 +1,33 @@
+#!/bin/env groovy
+library identifier: 'lib@KPITDOS-185_deploy', retriever: modernSCM(
+  [$class: 'GitSCMSource',
+     remote: 'https://github.kp.org/CSG/jenkins-shared-library.git',
+     credentialsId: 'kpGithub']
+    )
+
+node { 
+  stage('Initialization') {
+    checkout scm
+    pipelineConfig = readJSON file: "pipeline.json"
+  }
+}
+pipeline {
+
+  agent none
+
+  stages {
+    stage('Deploy to AKS') {
+      agent {
+        docker {
+          label "csc2cxp00001232"
+          image 'roffe/kubectl'
+        }
+      }
+      steps {
+        deployToEnvironment("dev", pipelineConfig)
+      }
+    }
+  }
+}
+
+

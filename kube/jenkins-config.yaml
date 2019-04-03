@@ -8,8 +8,64 @@ metadata:
 data:
   configuration-as-code.yaml: |
     unclassified:
+      globalConfigFiles:
+        configs:
+        - mavenSettings:
+            id: kp-maven-settings
+            name: kp-maven-settings
+            comment: kp-maven-settings
+            isReplaceAll: false
+            serverCredentialMappings:
+            - serverId: inhouse_snapshot
+              credentialsId: snapshot
+            - serverId: inhouse_release
+              credentialsId: release
+            content: |
+              <settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <profiles>
+                  <profile>
+                    <repositories>
+                      <repository>
+                        <snapshots>
+                          <enabled>false</enabled>
+                        </snapshots>
+                        <id>central</id>
+                        <name>libs-release</name>
+                        <url>Artifactory URL</url>
+                      </repository>
+                      <repository>
+                        <snapshots />
+                        <id>snapshots</id>
+                        <name>libs-snapshot</name>
+                        <url>Artifactory URL</url>
+                      </repository>
+                    </repositories>
+                    <pluginRepositories>
+                      <pluginRepository>
+                        <snapshots>
+                          <enabled>false</enabled>
+                        </snapshots>
+                        <id>central</id>
+                        <name>plugins-release</name>
+                        <url>Artifactory URL</url>
+                      </pluginRepository>
+                      <pluginRepository>
+                        <snapshots />
+                        <id>snapshots</id>
+                        <name>plugins-release</name>
+                        <url>Artifactory URL</url>
+                      </pluginRepository>
+                    </pluginRepositories>
+                    <id>artifactory</id>
+                  </profile>
+                </profiles>
+                <activeProfiles>
+                  <activeProfile>artifactory</activeProfile>
+                </activeProfiles>
+              </settings>
       location:
-        url: http://192.168.99.100:30000/
+        url: http://${MY_POD_IP}:30000/
     jenkins:
       clouds:
         - kubernetes:
@@ -17,13 +73,32 @@ data:
             containerCapStr: 100
             jenkinsUrl: http://${MY_POD_IP}:8080
             templates:
+              - name: docker
+                label: docker
+                nodeUsageMode: NORMAL
+                containers:
+                  - name: docker
+                    image: "docker:1.11"
+                    alwaysPullImage: true
+                    workingDir: "/home/jenkins"
+                    ttyEnabled: true
+                    command: cat
+                    args: ""
+                    resourceRequestCpu: "500m"
+                    resourceLimitCpu: "1000m"
+                    resourceRequestMemory: "1Gi"
+                    resourceLimitMemory: "2Gi"
+                volumes:
+                  - HostPathVolume:
+                      hostPath: "/var/run/docker.sock"
+                      mountPath: "/var/run/docker.sock"
               - name: jnlp-slave
                 label: jnlp-slave
                 nodeUsageMode: NORMAL
                 containers:
                   - name: jnlp
                     image: jenkins/jnlp-slave:latest
-                    alwaysPullImage: true
+                    alwaysPullImage: false
                     workingDir: "/home/jenkins"
                     ttyEnabled: true
                     command: /usr/local/bin/jenkins-slave
@@ -33,7 +108,7 @@ data:
                     resourceRequestMemory: "1Gi"
                     resourceLimitMemory: "2Gi"
               - name: maven
-                label: mavenpodtemplate
+                label: maven
                 nodeUsageMode: EXCLUSIVE
                 containers:
                   - name: maven
@@ -52,3 +127,133 @@ data:
                 idleMinutes: "1"
                 activeDeadlineSeconds: "120"
                 slaveConnectTimeout: "1000"
+    jobs:
+      - script: >
+          folder('Containers') {
+              displayName('Containers')
+              description('Containers')
+          }
+      - script: >
+          pipelineJob('Containers/jenkins-master') {
+            def repo = 'https://github.com/liatrio/liatrio-jenkins.git'
+            def script = 'Jenkinsfile.dev'
+            description("Pipeline for $script in $repo")
+            definition {
+              cpsScm {
+                scm {
+                  git {
+                    remote {
+                      url(repo)
+                    }
+                    branches('productzero')
+                    scriptPath(script)
+                    extensions { }  // required as otherwise it may try to tag the repo, which you may not want
+                  }
+                }
+              }
+            }
+          }
+      - script: >
+          pipelineJob('Containers/jnlp-slave') {
+            def repo = 'https://github.com/liatrio/liatrio-jenkins.git'
+            def script = 'example/slave/Jenkinsfile'
+            description("Pipeline for $script in $repo")
+            definition {
+              cpsScm {
+                scm {
+                  git {
+                    remote {
+                      url(repo)
+                    }
+                    branches('master')
+                    scriptPath(script)
+                    extensions { }  // required as otherwise it may try to tag the repo, which you may not want
+                  }
+                }
+              }
+            }
+          }
+      - script: >
+          folder('ProductZero') {
+              displayName('ProductZero')
+              description('ProductZero')
+          }
+      - script: >
+          pipelineJob('ProductZero/productzero-java-service') {
+            def repo = 'Product Zero Git URL'
+            def script = 'Jenkinsfile'
+            description("Pipeline for $script in $repo")
+            definition {
+              cpsScm {
+                scm {
+                  git {
+                    remote {
+                      url(repo)
+                      credentials('bitbucket')
+                    }
+                    branches('pipeline')
+                    scriptPath(script)
+                    extensions { }  // required as otherwise it may try to tag the repo, which you may not want
+                  }
+                }
+              }
+            }
+          }
+
+    credentials:
+      system:
+        domainCredentials:
+          - credentials:
+              - usernamePassword:
+                  scope:       GLOBAL
+                  id:          artifactory
+                  description: artifactory
+                  username:    "${CRED_artifactory_username}"
+                  password:    "${CRED_artifactory_password}"
+              - basicSSHUserPrivateKey:
+                  scope: GLOBAL
+                  id: "bitbucket"
+                  username: "git"
+                  passphrase: "" #Doable, but not recommended
+                  description: "SSH Credentials for bitbucket"
+                  privateKeySource:
+                    directEntry:
+                      privateKey: "${CRED_bitbucket_privateKey}"
+              - basicSSHUserPrivateKey:
+                  scope: GLOBAL
+                  id: "github"
+                  username: "git"
+                  passphrase: "" #Doable, but not recommended
+                  description: "Github SSH Credentials"
+                  privateKeySource:
+                    directEntry:
+                      privateKey: "${CRED_github_privateKey}"
+              - string:
+                  scope: GLOBAL
+                  id: "slack-token"
+                  description: "slack token"
+                  secret: "${CRED_slack-token_secret}"
+              - usernamePassword:
+                  scope:       GLOBAL
+                  id:          "kpGithub"
+                  description: "KP Github Service Account"
+                  username:    "${CRED_kpGithub_username}"
+                  password:    "${CRED_kpGithub_password}"
+              - usernamePassword:
+                  scope:       GLOBAL
+                  id:          "snapshot"
+                  description: "snapshot creds"
+                  username:    "${CRED_snapshot_username}"
+                  password:    "${CRED_snapshot_password}"
+              - usernamePassword:
+                  scope:       GLOBAL
+                  id:          "release"
+                  description: "release repo creds"
+                  username:    "${CRED_release_username}"
+                  password:    "${CRED_release_password}"
+              - usernamePassword:
+                  scope:       GLOBAL
+                  id:          "nexusIQ"
+                  description: "nexusIQ creds"
+                  username:    "${CRED_nexusIQ_username}"
+                  password:    "${CRED_nexusIQ_password}"
