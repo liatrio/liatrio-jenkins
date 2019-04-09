@@ -19,6 +19,7 @@ pipeline {
       agent {
         docker {
           image 'roffe/kubectl'
+          args "-u 0:0"
         }
       }
       steps {

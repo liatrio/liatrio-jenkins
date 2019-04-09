@@ -11,9 +11,9 @@ data:
       globalConfigFiles:
         configs:
         - mavenSettings:
-            id: kp-maven-settings
-            name: kp-maven-settings
-            comment: kp-maven-settings
+            id: maven-settings
+            name: maven-settings
+            comment: maven-settings
             isReplaceAll: false
             serverCredentialMappings:
             - serverId: inhouse_snapshot
