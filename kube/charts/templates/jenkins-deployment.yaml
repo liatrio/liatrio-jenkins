@@ -1,0 +1,146 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{.Value.teamName}}-jenkins
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{.Value.teamName}}-jenkins
+    spec:
+      serviceAccountName: {{.Value.teamName}}-jenkins
+      containers:
+        - name: jenkins
+          image: docker.artifactory.liatr.io/kube-jenkins:0.1.10
+#          image: liatrio/kube-jenkins:16
+          env:
+            # Read the configuration-as-code from the ConfigMap
+            - name: CASC_JENKINS_CONFIG
+              value: /var/jenkins_config/configuration-as-code.yaml
+            - name: SLACK_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: slack-token
+                  key: domain
+            - name: CRED_artifactory_username
+              valueFrom:
+                secretKeyRef:
+                  name: artifactory
+                  key: username
+            - name: CRED_artifactory_password
+              valueFrom:
+                secretKeyRef:
+                  name: artifactory
+                  key: password
+            - name: CRED_github_privateKey
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-ssh-key
+                  key: id_rsa
+            - name: CRED_bitbucket_privateKey
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-ssh-key
+                  key: id_rsa
+            - name: CRED_slack-token_secret
+              valueFrom:
+                secretKeyRef:
+                  name: slack-token
+                  key: token
+            - name: CRED_kpGithub_username
+              valueFrom:
+                secretKeyRef:
+                  name: kpgithub
+                  key: username
+            - name: CRED_kpGithub_password
+              valueFrom:
+                secretKeyRef:
+                  name: kpgithub
+                  key: password
+            - name: CRED_snapshot_username
+              valueFrom:
+                secretKeyRef:
+                  name: snapshot
+                  key: username
+            - name: CRED_snapshot_password
+              valueFrom:
+                secretKeyRef:
+                  name: snapshot
+                  key: password
+            - name: CRED_release_username
+              valueFrom:
+                secretKeyRef:
+                  name: release
+                  key: username
+            - name: CRED_release_password
+              valueFrom:
+                secretKeyRef:
+                  name: release
+                  key: password
+            - name: CRED_nexusIQ_username
+              valueFrom:
+                secretKeyRef:
+                  name: nexusiq
+                  key: username
+            - name: CRED_nexusIQ_password
+              valueFrom:
+                secretKeyRef:
+                  name: nexusiq
+                  key: password
+            - name: JAVA_OPTS
+              value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
+            # Additional helper Env Vars
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 500Mi
+          ports:
+            - name: http-port
+              containerPort: 8080
+            - name: jnlp-port
+              containerPort: 50000
+          livenessProbe:
+            httpGet:
+              path: /login
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 8080
+            periodSeconds: 30
+            timeoutSeconds: 30
+            successThreshold: 2
+            failureThreshold: 5
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+            - name: {{.Value.teamName}}-jenkins-configuration-as-code
+              mountPath: /var/jenkins_config
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: jenkins-home
+          persistentVolumeClaim:
+            claimName: jenkins-master-pvc
+        # The configuration-as-code ConfigMap
+        - name: {{.Value.teamName}}-jenkins-configuration-as-code
+          configMap:
+            name: jenkins-configuration-as-code
