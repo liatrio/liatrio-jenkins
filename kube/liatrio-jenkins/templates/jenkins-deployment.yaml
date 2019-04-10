@@ -1,15 +1,15 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{.Value.teamName}}-jenkins
+  name: {{.Values.teamName}}-jenkins
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{.Value.teamName}}-jenkins
+        app: {{.Values.teamName}}-jenkins
     spec:
-      serviceAccountName: {{.Value.teamName}}-jenkins
+      serviceAccountName: jenkins
       containers:
         - name: jenkins
           image: docker.artifactory.liatr.io/kube-jenkins:0.1.10
@@ -132,7 +132,7 @@ spec:
           volumeMounts:
             - name: jenkins-home
               mountPath: /var/jenkins_home
-            - name: {{.Value.teamName}}-jenkins-configuration-as-code
+            - name: {{.Values.teamName}}-jenkins-configuration-as-code
               mountPath: /var/jenkins_config
       securityContext:
         fsGroup: 1000
@@ -141,6 +141,6 @@ spec:
           persistentVolumeClaim:
             claimName: jenkins-master-pvc
         # The configuration-as-code ConfigMap
-        - name: {{.Value.teamName}}-jenkins-configuration-as-code
+        - name: {{.Values.teamName}}-jenkins-configuration-as-code
           configMap:
             name: jenkins-configuration-as-code

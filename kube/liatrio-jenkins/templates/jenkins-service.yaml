@@ -2,20 +2,20 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{.Value.teamName}}-jenkins
+  name: {{.Values.teamName}}-jenkins
 spec:
   type: NodePort
   ports:
     - port: 8080
       targetPort: 8080
-      nodePort: 30000
+      nodePort: 30001
   selector:
-    app: {{.Value.teamName}}-jenkins
+    app: {{.Values.teamName}}-jenkins
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{.Value.teamName}}-jenkins-discovery
+  name: {{.Values.teamName}}-jenkins-discovery
 spec:
   type: NodePort
   ports:

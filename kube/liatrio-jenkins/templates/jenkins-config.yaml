@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{.Value.teamName}}-jenkins-configuration-as-code
+  name: {{.Values.teamName}}-jenkins-configuration-as-code
 data:
   configuration-as-code.yaml: |
     unclassified:
