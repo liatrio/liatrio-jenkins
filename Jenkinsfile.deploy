@@ -18,7 +18,7 @@ pipeline {
     stage('Deploy to AKS') {
       agent {
         docker {
-          image 'roffe/kubectl'
+          image 'hypnoglow/kubernetes-helm'
           args "-u 0:0"
         }
       }
