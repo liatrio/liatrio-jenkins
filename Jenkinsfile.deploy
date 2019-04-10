@@ -4,12 +4,6 @@ library identifier: 'lib@dev', retriever: modernSCM([
     remote: 'https://github.com/liatrio/pipeline-library.git'
   ])
 
-node { 
-  stage('Initialization') {
-    checkout scm
-    pipelineConfig = readJSON file: "pipeline.json"
-  }
-}
 pipeline {
   parameters {
     string(name: 'helmName', defaultValue: '', description: 'What is the name of the Helm Jenkins app?')
@@ -27,8 +21,7 @@ pipeline {
         }
       }
       steps {
-        sh "ls"
-        deployToAks("aksCluster", "${helmName}", "${helmChoice}")
+        deployJenkins("aksCluster", "${helmName}", "${helmChoice}")
       }
     }
   }
