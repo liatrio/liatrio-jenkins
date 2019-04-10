@@ -11,6 +11,11 @@ node {
   }
 }
 pipeline {
+  parameters {
+    string(name: 'helmName', defaultValue: '', description: 'What is the name of the Helm Jenkins app?')
+    choice(name: 'helmChoice', choices: 'install\ndelete', description: 'Spin up or tear down?' )
+    file(name: 'helmValues', description: 'values.yml file for Jenkins Helm Chart')
+  }
 
   agent none
 
@@ -23,7 +28,8 @@ pipeline {
         }
       }
       steps {
-        deployToEnvironment("aksCluster", pipelineConfig)
+        sh "ls"
+        deployToAks("aksCluster", "${helmName}", "${helmChoice}", "${helmValues}")
       }
     }
   }
