@@ -23,7 +23,7 @@ pipeline {
         }
       }
       steps {
-        deployToEnvironment("dev", pipelineConfig)
+        deployToEnvironment("aksCluster", pipelineConfig)
       }
     }
   }
