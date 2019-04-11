@@ -127,5 +127,6 @@ data:
                 idleMinutes: "1"
                 activeDeadlineSeconds: "120"
                 slaveConnectTimeout: "1000"
-    jobs: {{.Values.jobs}}
+    jobs: {{ toYaml .Values.job}}
+
     credentials: {{.Values.credentials}}
