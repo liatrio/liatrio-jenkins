@@ -1,0 +1,79 @@
+templates:
+              - name: docker
+                label: docker
+                nodeUsageMode: NORMAL
+                containers:
+                  - name: docker
+                    image: "docker:1.11"
+                    alwaysPullImage: true
+                    workingDir: "/home/jenkins"
+                    ttyEnabled: true
+                    command: cat
+                    args: ""
+                    resourceRequestCpu: "500m"
+                    resourceLimitCpu: "1000m"
+                    resourceRequestMemory: "1Gi"
+                    resourceLimitMemory: "2Gi"
+                volumes:
+                  - HostPathVolume:
+                      hostPath: "/var/run/docker.sock"
+                      mountPath: "/var/run/docker.sock"
+              - name: jnlp-slave
+                label: jnlp-slave
+                nodeUsageMode: NORMAL
+                containers:
+                  - name: jnlp
+                    image: jenkins/jnlp-slave:latest
+                    alwaysPullImage: false
+                    workingDir: "/home/jenkins"
+                    ttyEnabled: true
+                    command: /usr/local/bin/jenkins-slave
+                    args: ""
+                    resourceRequestCpu: "500m"
+                    resourceLimitCpu: "1000m"
+                    resourceRequestMemory: "1Gi"
+                    resourceLimitMemory: "2Gi"
+                volumes:
+                  - emptyDirVolume:
+                      memory: false
+                      mountPath: "/tmp"
+              - name: maven
+                label: maven
+                nodeUsageMode: EXCLUSIVE
+                containers:
+                  - name: maven
+                    image: maven:3.3.9-jdk-8-alpine
+                    ttyEnabled: true
+                    workingDir: "/home/jenkins"
+                    command: "/bin/sh -c"
+                    args: "cat"
+              - name: sonar
+                label: sonar
+                nodeUsageMode: EXCLUSIVE
+                containers:
+                  - name: sonar
+                    image: emeraldsquad/sonar-scanner
+                    ttyEnabled: true
+                    workingDir: "/home/jenkins"
+                    command: "/bin/sh -c"
+                    args: "cat"
+              - name: golang
+                label: golang
+                nodeUsageMode: EXCLUSIVE
+                containers:
+                  - name: golang
+                    image: golang:1.10
+                    ttyEnabled: true
+                    workingDir: "/home/jenkins"
+                    command: "/bin/sh -c"
+                    args: "cat"
+              - name: cf
+                label: cf
+                nodeUsageMode: EXCLUSIVE
+                containers:
+                  - name: cf
+                    image: governmentpaas/cf-cli
+                    ttyEnabled: true
+                    workingDir: "/home/jenkins"
+                    command: "/bin/sh -c"
+                    args: "cat"
