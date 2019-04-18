@@ -15,79 +15,15 @@ spec:
           image: docker.artifactory.liatr.io/kube-jenkins:0.1.10
 #          image: liatrio/kube-jenkins:16
           env:
+            - name: CASC_VAULT_URL
+              value: {{.Values.VAULT_URL}}
+            - name: CASC_VAULT_TOKEN
+              value: {{.Values.VAULT_TOKEN}}
+            - name: CASC_VAULT_PATHS
+              value: "secret/jenkins/{{.Values.teamName}}"
             # Read the configuration-as-code from the ConfigMap
             - name: CASC_JENKINS_CONFIG
               value: /var/jenkins_config/configuration-as-code.yaml
-            - name: SLACK_DOMAIN
-              valueFrom:
-                secretKeyRef:
-                  name: slack-token
-                  key: domain
-            - name: CRED_artifactory_username
-              valueFrom:
-                secretKeyRef:
-                  name: artifactory
-                  key: username
-            - name: CRED_artifactory_password
-              valueFrom:
-                secretKeyRef:
-                  name: artifactory
-                  key: password
-            - name: CRED_github_privateKey
-              valueFrom:
-                secretKeyRef:
-                  name: jenkins-ssh-key
-                  key: id_rsa
-            - name: CRED_bitbucket_privateKey
-              valueFrom:
-                secretKeyRef:
-                  name: jenkins-ssh-key
-                  key: id_rsa
-            - name: CRED_slack-token_secret
-              valueFrom:
-                secretKeyRef:
-                  name: slack-token
-                  key: token
-            - name: CRED_kpGithub_username
-              valueFrom:
-                secretKeyRef:
-                  name: kpgithub
-                  key: username
-            - name: CRED_kpGithub_password
-              valueFrom:
-                secretKeyRef:
-                  name: kpgithub
-                  key: password
-            - name: CRED_snapshot_username
-              valueFrom:
-                secretKeyRef:
-                  name: snapshot
-                  key: username
-            - name: CRED_snapshot_password
-              valueFrom:
-                secretKeyRef:
-                  name: snapshot
-                  key: password
-            - name: CRED_release_username
-              valueFrom:
-                secretKeyRef:
-                  name: release
-                  key: username
-            - name: CRED_release_password
-              valueFrom:
-                secretKeyRef:
-                  name: release
-                  key: password
-            - name: CRED_nexusIQ_username
-              valueFrom:
-                secretKeyRef:
-                  name: nexusiq
-                  key: username
-            - name: CRED_nexusIQ_password
-              valueFrom:
-                secretKeyRef:
-                  name: nexusiq
-                  key: password
             - name: JAVA_OPTS
               value: -Dhudson.Main.development=true -Djenkins.install.runSetupWizard=false -Dorg.apache.commons.jelly.tags.fmt.timeZone=America/Los_Angeles
             # Additional helper Env Vars
@@ -139,8 +75,8 @@ spec:
       volumes:
         - name: jenkins-home
           persistentVolumeClaim:
-            claimName: jenkins-master-pvc
+            claimName: {{.Values.teamName}}-jenkins-master-pvc
         # The configuration-as-code ConfigMap
         - name: {{.Values.teamName}}-jenkins-configuration-as-code
           configMap:
-            name: jenkins-configuration-as-code
+            name: {{.Values.teamName}}-jenkins-configuration-as-code

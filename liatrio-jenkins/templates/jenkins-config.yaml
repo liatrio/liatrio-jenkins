@@ -73,6 +73,5 @@ data:
             containerCapStr: 100
             jenkinsUrl: http://${MY_POD_IP}:8080
             templates: {{.Values.templates}} 
-    jobs: {{ toYaml .Values.job}}
-
+    jobs: {{ toYaml .Values.jobs}}
     credentials: {{.Values.credentials}}
